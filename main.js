@@ -169,6 +169,8 @@ var qs = require('querystring');
 var bodyParser = require('body-parser');
 var compression = require('compression');
 
+app.use(express.static('public')); //public 디렉토리 안에서 static 파일을 찾겠다고 선언
+
 /*
   bodyParser는 POST로 요청된 body를 쉽게 추출할 수 있는 모듈이다
   추출된 결과는 request 객체의 body 프로퍼티로 저장된다
@@ -178,7 +180,7 @@ var compression = require('compression');
 app.use(express.urlencoded({ extended: false }));
 app.use(compression());
 
-//get 요청에 대해서만 실행되는 미들웨어 함수
+//파일 목록을 불러오는 미들웨어 함수(get 요청에 대해서만 실행)되는 미들웨어 함수
 app.get('*' , function(request, response, next){
   fs.readdir('./data', function(err, filelist){
     request.list = filelist;
@@ -192,7 +194,8 @@ app.get('/', (request, response) => {
           var description = 'Hello, Charlie';
           var list = template.list(request.list);
           var html = template.html(title, list
-              , `<h2>${title}</h2>${description}`
+              , `<h2>${title}</h2>${description}
+              <img src="/images/hello.jpg" style="width:300px; display:block; margin:10px"></img>`
               , `<a href="/create">create</a>`);
           response.send(html);
 });
