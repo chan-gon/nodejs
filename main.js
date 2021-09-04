@@ -200,33 +200,34 @@ app.get('/', (request, response) => {
           response.send(html);
 });
 
-app.get('/page/:pageId', (request, response) => {
+app.get('/page/:pageId', (request, response, next) => {
 
   console.log(request.list); //181번 라인에 선언된 미들웨어 함수 정의에 따라 request.list로 목록 불러오기 가능
 
     var filteredId = path.parse(request.params.pageId).base;
     fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
-      
-      var title = filteredId;
 
-      var sanitizedTitle = sanitizeHtml(title);
-      var sanitizedDescription = sanitizeHtml(description);
-
-      var list = template.list(request.list);
-
-      var html = template.html(title, list
-        , `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`
-        , `<a href="/create">create</a>
-           <a href="/update/${sanitizedTitle}">update</a>
-           <form action="/delete_process" method="post" onsubmit="return confirm('${sanitizedTitle}파일을 삭제하시겠습니까?')">
-              <input type="hidden" name="id" value="${sanitizedTitle}">
-              <input type="submit" value="delete">
-           </form>
-           `);
-      response.send(html);
-      });
-
-     
+       if(err){
+        next(err); //하단 500번 에러가 설정된 미들웨어 호출
+        
+       }else{
+        var title = filteredId;
+        var sanitizedTitle = sanitizeHtml(title);
+        var sanitizedDescription = sanitizeHtml(description);
+        var list = template.list(request.list);
+  
+        var html = template.html(title, list
+          , `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`
+          , `<a href="/create">create</a>
+             <a href="/update/${sanitizedTitle}">update</a>
+             <form action="/delete_process" method="post" onsubmit="return confirm('${sanitizedTitle}파일을 삭제하시겠습니까?')">
+                <input type="hidden" name="id" value="${sanitizedTitle}">
+                <input type="submit" value="delete">
+             </form>
+             `);
+        response.send(html);
+       }
+    });
 });
 
 app.get('/create', (request, response) => {
@@ -323,6 +324,20 @@ app.post('/delete_process', (request, response) => {
           response.redirect('/');
         });
 
+});
+
+/* 
+  에러 핸들러 미들웨어를 가장 하단에 배치한 이유는 
+  미들웨어는 순차적으로 실행되고, 에러 핸들링은 모든 미들웨어를 거치는 것이 좋기 때문
+
+*/
+app.use(function(req, res, next){
+  res.status(404).send("PAGE NOT FOUND");
+});
+
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
 });
 
 app.listen(port, () => {
