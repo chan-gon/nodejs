@@ -173,6 +173,8 @@ var bodyParser = require('body-parser');
 var compression = require('compression');
 var topicRouter = require('./routes/topic.js');
 var indexRouter = require('./routes/index.js');
+var helmet = require('helmet');
+app.use(helmet());
 
 app.use(express.static('public')); //public 디렉토리 안에서 static 파일을 찾겠다고 선언
 
