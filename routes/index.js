@@ -7,7 +7,7 @@ router.get('/', (request, response) => {
     var title = 'Welcome';
     var description = 'Hello, Charlie';
     var list = template.list(request.list);
-    var html = template.html(title, list
+    var html = template.HTML(title, list
         , `<h2>${title}</h2>${description}
         <img src="/images/hello.jpg" style="width:300px; display:block; margin:10px"></img>`
         , `<a href="/topic/create">create</a>`);

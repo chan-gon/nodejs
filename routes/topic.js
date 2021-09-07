@@ -10,7 +10,7 @@ router.get('/create', (request, response) => {
 
     var title = 'WEB - CREATE';
     var list = template.list(request.list);
-    var html = template.html(title, list,
+    var html = template.HTML(title, list,
         `<form class="" action="/topic/create_process" method="post">
           <p><input type="text" name="title" placeholder="title"></p>
           <p>
@@ -58,7 +58,7 @@ router.get('/create', (request, response) => {
   fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
   var title = filteredId;
   var list = template.list(request.list);
-  var html = template.html(title, list,
+  var html = template.HTML(title, list,
     `<form class="" action="/topic/update_process" method="post">
       <input type="text" name="id" value="${title}" hidden="hidden">
       <p><input type="text" name="title" placeholder="title" value="${title}"></p>
