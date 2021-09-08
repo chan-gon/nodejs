@@ -30,6 +30,12 @@ router.get('/login', (request, response) => {
   
   });
 
+router.get('/logout', (request, response) => {
+   request.session.destroy(function(err){
+      response.redirect('/');
+   });
+});
+
 router.post('/login_process', (request, response) => {
   
     var post = request.body; //body-parser 설정으로 request 객체의 body 프로퍼티에 접근 가능
@@ -38,7 +44,9 @@ router.post('/login_process', (request, response) => {
     if(email === authData.email && password === authData.password){
       request.session.is_logined = true;
       request.session.nickname = authData.nickname;
-      response.redirect(`/`);
+      request.session.save(function(){// save함수를 사용하면 session 객체의 데이터를 session store에 적용하는 작업을 바로 실행
+        response.redirect(`/`); // session store에 저장이 완료되면 redirection 실행(이렇게 안하면 redirection 먼저 되고 session 객체 저장 안되는 상황이 발생할 수 있음)
+      }); 
     }else{
       response.send('incorrect email or password');
     }
