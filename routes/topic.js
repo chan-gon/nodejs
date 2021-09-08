@@ -7,10 +7,12 @@ var template = require('../lib/template.js');
 var auth = require('../lib/auth');
 
 router.get('/create', function (request, response) {
-  if (!auth.isOwner(request, response)) {
+
+  if (!auth.isOwner(request, response)) { // logout 상황에서 create 요청 시 / 로 이동
     response.redirect('/');
     return false;
   }
+
   var title = 'WEB - create';
   var list = template.list(request.list);
   var html = template.HTML(title, list, `
